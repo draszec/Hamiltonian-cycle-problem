@@ -43,6 +43,9 @@ def hamiltonian_cycle() -> bool:
         hamiltonian_list.append([])
 
     starting_node = 0
+    for i in range(len(adjacency_list)):
+        if len(adjacency_list[i]) > len(adjacency_list[starting_node]):
+            starting_node = i
 
     hamiltonian_list[0].append(({starting_node}, starting_node))
 
