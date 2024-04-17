@@ -53,7 +53,7 @@ public class HamiltonCycleGreed {
         return vertex;
     }
 
-    // Główna funkcja do znalezienia ścieżki Hamiltona zaczynając od wierzchołka o najwyższym stopniu
+    /**Główna funkcja do znalezienia ścieżki Hamiltona zaczynając od wierzchołka o najwyższym stopniu**/
     public void findPath() {
         int startVertex = findHighestDegreeVertex();
         this.visited[startVertex] = true;
@@ -120,7 +120,7 @@ public class HamiltonCycleGreed {
 
 
     // Funkcja pomocnicza do drukowania ścieżki
-
+    /** Funkcja drukująca cykl Hamiltona**/
     private void printPath() {
         System.out.println("Ścieżka Hamiltona:");
         StringBuilder sb = new StringBuilder("Ścieżka Hamiltona:\n");
@@ -143,7 +143,7 @@ public class HamiltonCycleGreed {
         int vertices = scanner.nextInt();
         System.out.println("Podaj prawdopodobieństwo krawędzi (0-1):");
         double edgeProbability = scanner.nextDouble();
-        System.out.println("Podaj liczbę wykonanych algorytmów:");
+        System.out.println("Podaj liczbę powtórzeń:");
         int executions = scanner.nextInt();
         try (FileWriter writer = new FileWriter("wyniki_algorytmu.txt", false)) { // Otwarcie pliku do dopisywania
             for (int i = 0; i < executions; i++) {
