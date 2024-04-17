@@ -9,7 +9,9 @@ public class HamiltonCycleGreed {
     private final int vertices;
     private final FileWriter writer; // Dodanie obiektu FileWriter
 
-    /**Generuje graf i inicjalizacja FileWriter **/
+    /**
+     * Generuje graf i inicjalizacja FileWriter
+     **/
     public HamiltonCycleGreed(int vertices, double edgeProbability, FileWriter writer) {
         this.vertices = vertices;
         this.visited = new boolean[vertices];
@@ -52,21 +54,22 @@ public class HamiltonCycleGreed {
     }
 
     // Główna funkcja do znalezienia ścieżki Hamiltona zaczynając od wierzchołka o najwyższym stopniu
-    public boolean findPath() {
+    public void findPath() {
         int startVertex = findHighestDegreeVertex();
         this.visited[startVertex] = true;
         this.path.add(startVertex);
 
         if (!findNextLowestDegreeVertex(startVertex)) {
             System.out.println("Nie udało się znaleźć ścieżki Hamiltona.");
-            return false;
+            return;
         }
         this.path.add(startVertex); // Tworzenie cyklu poprzez powrót do wierzchołka startowego
         printPath();
-        return true;
     }
 
-    /** Rekurencyjna funkcja do wyboru następnego wierzchołka o najniższym stopniu**/
+    /**
+     * Rekurencyjna funkcja do wyboru następnego wierzchołka o najniższym stopniu
+     **/
     private boolean findNextLowestDegreeVertex(int current) {
         if (path.size() == vertices) {
             return graph[current][path.get(0)] > 0; // Sprawdź, czy ostatni wierzchołek łączy się z pierwszym
@@ -94,7 +97,9 @@ public class HamiltonCycleGreed {
         return findNextLowestDegreeVertex(nextVertex);
     }
 
-    /** Metoda do wydrukowania macierzy grafu**/
+    /**
+     * Metoda do wydrukowania macierzy grafu
+     **/
     private void printGraphMatrix() {
         System.out.println("Wygenerowana macierz grafu:");
         StringBuilder sb = new StringBuilder("Wygenerowana macierz grafu:\n");
@@ -140,12 +145,10 @@ public class HamiltonCycleGreed {
         double edgeProbability = scanner.nextDouble();
         System.out.println("Podaj liczbę wykonanych algorytmów:");
         int executions = scanner.nextInt();
-
         try (FileWriter writer = new FileWriter("wyniki_algorytmu.txt", false)) { // Otwarcie pliku do dopisywania
             for (int i = 0; i < executions; i++) {
                 System.out.println("Wykonanie nr " + (i + 1));
                 HamiltonCycleGreed cycleFinder = new HamiltonCycleGreed(vertices, edgeProbability, writer);
-
                 long startTime = System.nanoTime();
                 cycleFinder.findPath();
                 long endTime = System.nanoTime();
