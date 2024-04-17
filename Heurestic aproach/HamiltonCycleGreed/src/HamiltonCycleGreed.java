@@ -53,7 +53,9 @@ public class HamiltonCycleGreed {
         return vertex;
     }
 
-    /**Główna funkcja do znalezienia ścieżki Hamiltona zaczynając od wierzchołka o najwyższym stopniu**/
+    /**
+     * Główna funkcja do znalezienia ścieżki Hamiltona zaczynając od wierzchołka o najwyższym stopniu
+     **/
     public void findPath() {
         int startVertex = findHighestDegreeVertex();
         this.visited[startVertex] = true;
@@ -120,7 +122,9 @@ public class HamiltonCycleGreed {
 
 
     // Funkcja pomocnicza do drukowania ścieżki
-    /** Funkcja drukująca cykl Hamiltona**/
+    /**
+     * Funkcja drukująca cykl Hamiltona
+     **/
     private void printPath() {
         System.out.println("Ścieżka Hamiltona:");
         StringBuilder sb = new StringBuilder("Ścieżka Hamiltona:\n");
