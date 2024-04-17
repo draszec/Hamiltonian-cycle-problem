@@ -25,7 +25,7 @@ Funkcja ZnajdźWierzchołekONajwyższymStopniu
     vertex <- i
     Zwróć vertex
 
-Funkcja ZnajdźNastępnyWierzchołekONajniższymStopniu
+Funkcja ZnajdźNastępnyWierzchołekONajniższymStopniu(current)
 
     Jeśli rozmiar ścieżki == vertices:
     Zwróć czy graph[current][pierwszy element ścieżki] > 0
