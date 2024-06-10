@@ -1,5 +1,5 @@
 wyniki_algorytmu.txt
-wyniki_algorytmu*
+wyniki_algorytmu*.txt
 ### IntelliJ IDEA ###
 out/
 !**/src/main/**/out/
