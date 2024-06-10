@@ -7,26 +7,24 @@ public class HamiltonCycleGreed {
     private final List<Integer> path = new ArrayList<>();
     private final boolean[] visited;
     private final int vertices;
-    private final FileWriter writer; // Dodanie obiektu FileWriter
+    private int countOfExecutions = 0;
 
     /**
-     * Generuje graf i inicjalizacja FileWriter
+     * Generuje graf i inicjalizuje FileWriter
      **/
-    public HamiltonCycleGreed(int vertices, double edgeProbability, FileWriter writer) {
+    public HamiltonCycleGreed(int vertices, double edgeProbability) {
         this.vertices = vertices;
         this.visited = new boolean[vertices];
         Arrays.fill(this.visited, false);
         this.graph = generateGraph(vertices, edgeProbability);
-        this.writer = writer; // Inicjalizacja FileWriter
         printGraphMatrix();
     }
-
 
     public int[][] generateGraph(int V, double edgeProbability) {
         Random random = new Random();
         int[][] graph = new int[V][V];
         for (int i = 0; i < V; i++) {
-            for (int j = i + 1; j < V; j++) { // Ustawiamy, że graf jest nieskierowany
+            for (int j = i + 1; j < V; j++) { // Zakłada, że graf jest nieskierowany
                 if (random.nextDouble() < edgeProbability) {
                     graph[i][j] = 1;
                     graph[j][i] = 1;
@@ -36,7 +34,6 @@ public class HamiltonCycleGreed {
         return graph;
     }
 
-    // Funkcja do znalezienia wierzchołka o najwyższym stopniu
     private int findHighestDegreeVertex() {
         int maxDegree = -1;
         int vertex = -1;
@@ -62,19 +59,16 @@ public class HamiltonCycleGreed {
         this.path.add(startVertex);
 
         if (!findNextLowestDegreeVertex(startVertex)) {
-            System.out.println("Nie udało się znaleźć ścieżki Hamiltona.");
+            System.out.println("Nie znaleziono rozwiązania");
             return;
         }
-        this.path.add(startVertex); // Tworzenie cyklu poprzez powrót do wierzchołka startowego
+        this.path.add(startVertex); // Tworzy cykl poprzez powrót do wierzchołka początkowego
         printPath();
     }
 
-    /**
-     * Rekurencyjna funkcja do wyboru następnego wierzchołka o najniższym stopniu
-     **/
     private boolean findNextLowestDegreeVertex(int current) {
         if (path.size() == vertices) {
-            return graph[current][path.get(0)] > 0; // Sprawdź, czy ostatni wierzchołek łączy się z pierwszym
+            return graph[current][path.get(0)] > 0; // Sprawdza, czy ostatni wierzchołek łączy się z pierwszym
         }
 
         int minDegree = Integer.MAX_VALUE;
@@ -89,6 +83,7 @@ public class HamiltonCycleGreed {
                     minDegree = degree;
                     nextVertex = i;
                 }
+                countOfExecutions++;
             }
         }
 
@@ -99,46 +94,22 @@ public class HamiltonCycleGreed {
         return findNextLowestDegreeVertex(nextVertex);
     }
 
-    /**
-     * Metoda do wydrukowania macierzy grafu
-     **/
     private void printGraphMatrix() {
         System.out.println("Wygenerowana macierz grafu:");
-        StringBuilder sb = new StringBuilder("Wygenerowana macierz grafu:\n");
         for (int i = 0; i < vertices; i++) {
             for (int j = 0; j < vertices; j++) {
                 System.out.print(graph[i][j] + " ");
-                sb.append(graph[i][j]).append(" ");
             }
             System.out.println(); // Nowa linia po każdym wierszu
-            sb.append("\n");
-        }
-        try {
-            writer.write(sb.toString());
-        } catch (IOException e) {
-            System.err.println("Nie można zapisać macierzy grafu do pliku: " + e.getMessage());
         }
     }
 
-
-    // Funkcja pomocnicza do drukowania ścieżki
-    /**
-     * Funkcja drukująca cykl Hamiltona
-     **/
     private void printPath() {
         System.out.println("Ścieżka Hamiltona:");
-        StringBuilder sb = new StringBuilder("Ścieżka Hamiltona:\n");
         for (Integer vertex : path) {
             System.out.print(vertex + " ");
-            sb.append(vertex).append(" ");
         }
         System.out.println();
-        sb.append("\n");
-        try {
-            writer.write(sb.toString());
-        } catch (IOException e) {
-            System.err.println("Nie można zapisać ścieżki Hamiltona do pliku: " + e.getMessage());
-        }
     }
 
     public static void main(String[] args) {
@@ -149,17 +120,31 @@ public class HamiltonCycleGreed {
         double edgeProbability = scanner.nextDouble();
         System.out.println("Podaj liczbę powtórzeń:");
         int executions = scanner.nextInt();
-        try (FileWriter writer = new FileWriter("wyniki_algorytmu.txt", false)) { // Otwarcie pliku do dopisywania
+
+        String outputPath = "hamilton_cycle_results.csv";
+        try (FileWriter writer = new FileWriter(outputPath, false)) {
+            if (new java.io.File(outputPath).length() == 0) {
+                writer.write("Czas wykonania (ms),Ścieżka Hamiltona,Liczenie Operacji,Liczba Wierzchołków\n");
+            }
+
+            System.out.println("Rozgrzewka JVM...");
+            for (int i = 0; i < 3; i++) {
+                HamiltonCycleGreed warmupCycleFinder = new HamiltonCycleGreed(vertices, edgeProbability);
+                warmupCycleFinder.findPath();
+            }
+            System.out.println("...koniec rozgrzewki.");
+
             for (int i = 0; i < executions; i++) {
-                System.out.println("Wykonanie nr " + (i + 1));
-                HamiltonCycleGreed cycleFinder = new HamiltonCycleGreed(vertices, edgeProbability, writer);
+                System.out.println("Wykonanie #" + (i + 1));
+                HamiltonCycleGreed cycleFinder = new HamiltonCycleGreed(vertices, edgeProbability);
                 long startTime = System.nanoTime();
                 cycleFinder.findPath();
                 long endTime = System.nanoTime();
                 double elapsedTimeInMs = (endTime - startTime) / 1_000_000.0;
                 System.out.println("Czas trwania heurystycznego algorytmu wyszukiwania cyklu Hamiltona: " + elapsedTimeInMs + " ms\n");
 
-                writer.write("Czas trwania algorytmu: " + elapsedTimeInMs + " ms\n\n");
+                String pathString = "[" + cycleFinder.path.toString().replaceAll("[\\[\\]]", "") + "]";
+                writer.write(elapsedTimeInMs + "," + pathString + "," + cycleFinder.countOfExecutions + "," + vertices + "\n");
             }
         } catch (IOException e) {
             System.err.println("Wystąpił błąd przy zapisie do pliku: " + e.getMessage());
