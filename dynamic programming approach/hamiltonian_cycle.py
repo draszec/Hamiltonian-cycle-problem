@@ -1,7 +1,10 @@
+import os
 import random
 import time
+import pandas as pd
 
 adjacency_list: tuple[tuple[int]]
+count_of_algorithm = 0
 
 
 def generate_graph(size: int, number_of_edges: int) -> tuple[tuple[int]]:
@@ -29,6 +32,7 @@ def generate_graph(size: int, number_of_edges: int) -> tuple[tuple[int]]:
 
 
 def hamiltonian_cycle() -> bool:
+    global count_of_algorithm
     hamiltonian_list: list[set[tuple[frozenset, int]]] = []
     for i in range(len(adjacency_list)):
         # t = set()
@@ -50,6 +54,7 @@ def hamiltonian_cycle() -> bool:
                     new_path = {adjacent_node}
                     new_path = frozenset(new_path.union(path))
                     hamiltonian_list[i + 1].add((new_path, adjacent_node))
+                    count_of_algorithm += 1
 
     for _, last_node in hamiltonian_list[-1]:
         if starting_node in adjacency_list[last_node]:
@@ -59,13 +64,18 @@ def hamiltonian_cycle() -> bool:
 
 
 if __name__ == "__main__":
-    adjacency_list = generate_graph(20, 50)
+    size = 15
+    adjacency_list = generate_graph(size, 40)
 
     entry = time.time()
     cycle = hamiltonian_cycle()
     end = time.time()
-    print(end - entry)
+    time_of_execution = end - entry
+    df = pd.DataFrame(
+        data={'n-size': [size], 'operations_count': [count_of_algorithm], 'time': [time_of_execution], 'output': [cycle]}
+    )
+    output_path = '../dynamic.csv'
+    df.to_csv(output_path, mode='a', header=not os.path.exists(output_path))
 
     # print(adjacency_list)
     print(cycle)
-
