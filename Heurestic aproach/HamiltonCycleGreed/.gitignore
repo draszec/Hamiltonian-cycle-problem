@@ -1,5 +1,4 @@
-wyniki_algorytmu.txt
-wyniki_algorytmu*.txt
+hamilton_cycle_results.csv
 ### IntelliJ IDEA ###
 out/
 !**/src/main/**/out/
