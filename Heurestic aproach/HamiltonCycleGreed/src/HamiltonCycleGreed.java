@@ -12,25 +12,30 @@ public class HamiltonCycleGreed {
     /**
      * Generuje graf i inicjalizuje FileWriter
      **/
-    public HamiltonCycleGreed(int vertices, double edgeProbability) {
+    public HamiltonCycleGreed(int vertices, int numberOfEdges) {
         this.vertices = vertices;
         this.visited = new boolean[vertices];
         Arrays.fill(this.visited, false);
-        this.graph = generateGraph(vertices, edgeProbability);
+        this.graph = generateGraph(vertices, numberOfEdges);
         printGraphMatrix();
     }
 
-    public int[][] generateGraph(int V, double edgeProbability) {
+    public int[][] generateGraph(int V, int numberOfEdges) {
         Random random = new Random();
         int[][] graph = new int[V][V];
-        for (int i = 0; i < V; i++) {
-            for (int j = i + 1; j < V; j++) { // Zakłada, że graf jest nieskierowany
-                if (random.nextDouble() < edgeProbability) {
-                    graph[i][j] = 1;
-                    graph[j][i] = 1;
-                }
+        int edgesAdded = 0;
+
+        while (edgesAdded < numberOfEdges) {
+            int i = random.nextInt(V);
+            int j = random.nextInt(V);
+
+            if (i != j && graph[i][j] == 0) { // Zakłada, że graf jest nieskierowany
+                graph[i][j] = 1;
+                graph[j][i] = 1;
+                edgesAdded++;
             }
         }
+
         return graph;
     }
 
@@ -116,8 +121,15 @@ public class HamiltonCycleGreed {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Podaj liczbę wierzchołków w grafie:");
         int vertices = scanner.nextInt();
-        System.out.println("Podaj prawdopodobieństwo krawędzi (0-1):");
-        double edgeProbability = scanner.nextDouble();
+        System.out.println("Podaj liczbę krawędzi w grafie:");
+        int numberOfEdges = scanner.nextInt();
+
+        int maxEdges = vertices * (vertices - 1) / 2;
+        if (numberOfEdges > maxEdges) {
+            System.out.println("Liczba krawędzi jest większa niż maksymalna możliwa liczba krawędzi dla danego grafu.");
+            return;
+        }
+
         System.out.println("Podaj liczbę powtórzeń:");
         int executions = scanner.nextInt();
 
@@ -129,14 +141,14 @@ public class HamiltonCycleGreed {
 
             System.out.println("Rozgrzewka JVM...");
             for (int i = 0; i < 3; i++) {
-                HamiltonCycleGreed warmupCycleFinder = new HamiltonCycleGreed(vertices, edgeProbability);
+                HamiltonCycleGreed warmupCycleFinder = new HamiltonCycleGreed(vertices, numberOfEdges);
                 warmupCycleFinder.findPath();
             }
             System.out.println("...koniec rozgrzewki.");
 
             for (int i = 0; i < executions; i++) {
                 System.out.println("Wykonanie #" + (i + 1));
-                HamiltonCycleGreed cycleFinder = new HamiltonCycleGreed(vertices, edgeProbability);
+                HamiltonCycleGreed cycleFinder = new HamiltonCycleGreed(vertices, numberOfEdges);
                 long startTime = System.nanoTime();
                 cycleFinder.findPath();
                 long endTime = System.nanoTime();
