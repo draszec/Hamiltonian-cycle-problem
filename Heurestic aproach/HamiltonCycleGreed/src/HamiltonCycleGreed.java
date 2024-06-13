@@ -73,22 +73,27 @@ public class HamiltonCycleGreed {
 
     private boolean findNextLowestDegreeVertex(int current) {
         if (path.size() == vertices) {
+            countOfExecutions++; // For the final check
             return graph[current][path.get(0)] > 0; // Sprawdza, czy ostatni wierzchołek łączy się z pierwszym
         }
 
         int minDegree = Integer.MAX_VALUE;
         int nextVertex = -1;
         for (int i = 0; i < vertices; i++) {
+            countOfExecutions++; // For the comparison in the loop condition
             if (graph[current][i] > 0 && !visited[i]) {
+                countOfExecutions++; // For the if condition
                 int degree = 0;
                 for (int j = 0; j < vertices; j++) {
+                    countOfExecutions++; // For the comparison in the loop condition
                     if (graph[i][j] > 0) degree++;
+                    countOfExecutions++; // For the if condition
                 }
                 if (degree < minDegree) {
                     minDegree = degree;
                     nextVertex = i;
+                    countOfExecutions++; // For the if condition and assignment
                 }
-                countOfExecutions++;
             }
         }
 
