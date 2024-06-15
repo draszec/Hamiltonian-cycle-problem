@@ -8,34 +8,30 @@ public class HamiltonCycleGreed {
     private final boolean[] visited;
     private final int vertices;
     private int countOfExecutions = 0;
+    private boolean cycleFound = false;
 
     /**
-     * Generuje graf i inicjalizuje FileWriter
+     * Generuje graf i initialize FileWriter
      **/
-    public HamiltonCycleGreed(int vertices, int numberOfEdges) {
+    public HamiltonCycleGreed(int vertices, double edgeProbability) {
         this.vertices = vertices;
         this.visited = new boolean[vertices];
         Arrays.fill(this.visited, false);
-        this.graph = generateGraph(vertices, numberOfEdges);
+        this.graph = generateGraph(vertices, edgeProbability);
         printGraphMatrix();
     }
 
-    public int[][] generateGraph(int V, int numberOfEdges) {
+    public int[][] generateGraph(int V, double edgeProbability) {
         Random random = new Random();
         int[][] graph = new int[V][V];
-        int edgesAdded = 0;
-
-        while (edgesAdded < numberOfEdges) {
-            int i = random.nextInt(V);
-            int j = random.nextInt(V);
-
-            if (i != j && graph[i][j] == 0) { // Zakłada, że graf jest nieskierowany
-                graph[i][j] = 1;
-                graph[j][i] = 1;
-                edgesAdded++;
+        for (int i = 0; i < V; i++) {
+            for (int j = i + 1; j < V; j++) { // Zakłada, że graf jest nieskierowany
+                if (random.nextDouble() < edgeProbability) {
+                    graph[i][j] = 1;
+                    graph[j][i] = 1;
+                }
             }
         }
-
         return graph;
     }
 
@@ -64,35 +60,37 @@ public class HamiltonCycleGreed {
         this.path.add(startVertex);
 
         if (!findNextLowestDegreeVertex(startVertex)) {
+            cycleFound = false;
             System.out.println("Nie znaleziono rozwiązania");
             return;
         }
         this.path.add(startVertex); // Tworzy cykl poprzez powrót do wierzchołka początkowego
+        cycleFound = true;
         printPath();
     }
 
     private boolean findNextLowestDegreeVertex(int current) {
         if (path.size() == vertices) {
-            countOfExecutions++; // For the final check
+            countOfExecutions++; // Dla końcowego sprawdzenia
             return graph[current][path.get(0)] > 0; // Sprawdza, czy ostatni wierzchołek łączy się z pierwszym
         }
 
         int minDegree = Integer.MAX_VALUE;
         int nextVertex = -1;
         for (int i = 0; i < vertices; i++) {
-            countOfExecutions++; // For the comparison in the loop condition
+            countOfExecutions++; // Dla porównania w warunku pętli
             if (graph[current][i] > 0 && !visited[i]) {
-                countOfExecutions++; // For the if condition
+                countOfExecutions++; // Dla warunku if
                 int degree = 0;
                 for (int j = 0; j < vertices; j++) {
-                    countOfExecutions++; // For the comparison in the loop condition
+                    countOfExecutions++; // Dla porównania w warunku pętli
                     if (graph[i][j] > 0) degree++;
-                    countOfExecutions++; // For the if condition
+                    countOfExecutions++; // Dla warunku if
                 }
                 if (degree < minDegree) {
                     minDegree = degree;
                     nextVertex = i;
-                    countOfExecutions++; // For the if condition and assignment
+                    countOfExecutions++; // Dla warunku if i przypisania
                 }
             }
         }
@@ -123,45 +121,38 @@ public class HamiltonCycleGreed {
     }
 
     public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Podaj liczbę wierzchołków w grafie:");
-        int vertices = scanner.nextInt();
-        System.out.println("Podaj liczbę krawędzi w grafie:");
-        int numberOfEdges = scanner.nextInt();
-
-        int maxEdges = vertices * (vertices - 1) / 2;
-        if (numberOfEdges > maxEdges) {
-            System.out.println("Liczba krawędzi jest większa niż maksymalna możliwa liczba krawędzi dla danego grafu.");
-            return;
-        }
-
-        System.out.println("Podaj liczbę powtórzeń:");
-        int executions = scanner.nextInt();
+        // Hardcoded values for vertex counts, edge probabilities, and number of executions
+        int[] vertexCounts = {10,15,20, 25, 30, 35, 40, 45, 50, 55,60,65,70,75,80,85,90};
+        double[] edgeProbabilities = {0.3, 0.5, 0.7};
+        int executions = 300;
 
         String outputPath = "hamilton_cycle_results.csv";
         try (FileWriter writer = new FileWriter(outputPath, false)) {
             if (new java.io.File(outputPath).length() == 0) {
-                writer.write("Czas wykonania (ms),Ścieżka Hamiltona,Liczenie Operacji,Liczba Wierzchołków\n");
+                writer.write("Czas wykonania (ms),Czy znaleziono cykl Hamiltona,Liczenie Operacji,Liczba Wierzchołków,Prawdopodobieństwo Krawędzi\n");
             }
 
             System.out.println("Rozgrzewka JVM...");
             for (int i = 0; i < 3; i++) {
-                HamiltonCycleGreed warmupCycleFinder = new HamiltonCycleGreed(vertices, numberOfEdges);
+                HamiltonCycleGreed warmupCycleFinder = new HamiltonCycleGreed(vertexCounts[0], edgeProbabilities[0]);
                 warmupCycleFinder.findPath();
             }
             System.out.println("...koniec rozgrzewki.");
 
-            for (int i = 0; i < executions; i++) {
-                System.out.println("Wykonanie #" + (i + 1));
-                HamiltonCycleGreed cycleFinder = new HamiltonCycleGreed(vertices, numberOfEdges);
-                long startTime = System.nanoTime();
-                cycleFinder.findPath();
-                long endTime = System.nanoTime();
-                double elapsedTimeInMs = (endTime - startTime) / 1_000_000.0;
-                System.out.println("Czas trwania heurystycznego algorytmu wyszukiwania cyklu Hamiltona: " + elapsedTimeInMs + " ms\n");
+            for (int vertices : vertexCounts) {
+                for (double edgeProbability : edgeProbabilities) {
+                    for (int i = 0; i < executions; i++) {
+                        System.out.println("Wykonanie #" + (i + 1) + " dla liczby wierzchołków: " + vertices + " i prawdopodobieństwa krawędzi: " + edgeProbability);
+                        HamiltonCycleGreed cycleFinder = new HamiltonCycleGreed(vertices, edgeProbability);
+                        long startTime = System.nanoTime();
+                        cycleFinder.findPath();
+                        long endTime = System.nanoTime();
+                        double elapsedTimeInMs = (endTime - startTime) / 1_000_000.0;
+                        System.out.println("Czas trwania heurystycznego algorytmu wyszukiwania cyklu Hamiltona: " + elapsedTimeInMs + " ms\n");
 
-                String pathString = "[" + cycleFinder.path.toString().replaceAll("[\\[\\]]", "") + "]";
-                writer.write(elapsedTimeInMs + "," + pathString + "," + cycleFinder.countOfExecutions + "," + vertices + "\n");
+                        writer.write(elapsedTimeInMs + "," + cycleFinder.cycleFound + "," + cycleFinder.countOfExecutions + "," + vertices + "," + edgeProbability + "\n");
+                    }
+                }
             }
         } catch (IOException e) {
             System.err.println("Wystąpił błąd przy zapisie do pliku: " + e.getMessage());
