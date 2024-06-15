@@ -122,7 +122,7 @@ public class HamiltonCycleGreed {
 
     public static void main(String[] args) {
         // Hardcoded values for vertex counts, edge probabilities, and number of executions
-        int[] vertexCounts = {10,15,20, 25, 30, 35, 40, 45, 50, 55,60,65,70,75,80,85,90};
+        int[] vertexCounts = {5,10,15,20, 25, 30, 35, 40, 45, 50, 55,60,65,70,75,80,85,90,95,100};
         double[] edgeProbabilities = {0.3, 0.5, 0.7};
         int executions = 300;
 
