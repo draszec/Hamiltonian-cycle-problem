@@ -1,51 +1,70 @@
-Funkcja ZnajdźŚcieżkęHamiltona
+Funkcja ZnajdzSciezke
 
-    startVertex <- ZnajdźWierzchołekONajwyższymStopniu
-    Oznacz startVertex jako odwiedzony
-    Dodaj startVertex do ścieżki
+    startowyWierzcholek ← znajdzWierzcholekZNajwiekszymStopniem()
+    odwiedzone[startowyWierzcholek] ← prawda
+    sciezka.dodaj(startowyWierzcholek)
 
-    Jeśli !ZnajdźNastępnyWierzchołekONajniższymStopniu(startVertex):
-        Wydrukuj "Nie udało się znaleźć ścieżki Hamiltona."
-        Zwróć
+    jeżeli nie znajdzNastepnyWierzcholekZNajmniejszymStopniem(startowyWierzcholek) wtedy
+        cyklZnaleziony ← fałsz
+        wypisz("Nie znaleziono rozwiązania")
+        zwroc
+    koniec jeżeli
 
-    Dodaj startVertex do ścieżki (tworzenie cyklu)
-    WydrukujŚcieżkę
+    sciezka.dodaj(startowyWierzcholek) // Tworzy cykl poprzez powrót do wierzchołka początkowego
+    cyklZnaleziony ← prawda
+    wypiszSciezke()
 
-Funkcja ZnajdźWierzchołekONajwyższymStopniu
+Funkcja znajdzWierzcholekZNajwiekszymStopniem
 
-    maxDegree <- -1 
-    vertex <- -1
-    Dla każdego i od 0 do vertices-1:
-    degree <- 0
-    Dla każdego j od 0 do vertices-1:
-    Jeśli graph[i][j] > 0:
-    degree <- degree + 1
-    Jeśli degree > maxDegree:
-    maxDegree <- degree
-    vertex <- i
-    Zwróć vertex
+    maksymalnyStopien ← -1
+    wierzcholek ← -1
+    dla i od 0 do wierzcholki - 1 zrob
+        stopien ← 0
+        dla j od 0 do wierzcholki - 1 zrob
+            jeżeli graf[i][j] > 0 wtedy
+                stopien ← stopien + 1
+            koniec jeżeli
+        koniec dla
+        jeżeli stopien > maksymalnyStopien wtedy
+            maksymalnyStopien ← stopien
+            wierzcholek ← i
+        koniec jeżeli
+    koniec dla
+    zwroc wierzcholek
 
 Funkcja ZnajdźNastępnyWierzchołekONajniższymStopniu(current)
 
-    Jeśli rozmiar ścieżki == vertices:
-    Zwróć czy graph[current][pierwszy element ścieżki] > 0
+     jeżeli sciezka.rozmiar() = wierzcholki wtedy
+        liczbaWykonan ← liczbaWykonan + 1 // Dla końcowego sprawdzenia
+        zwroc graf[obecny][sciezka.pobierz(0)] > 0 // Sprawdza, czy ostatni wierzchołek łączy się z pierwszym
+    koniec jeżeli
 
-    minDegree <- nieskończoność
-    nextVertex <- -1
-    Dla każdego i od 0 do vertices-1:
-        Jeśli graph[current][i] > 0 i i nie jest odwiedzone:
-            degree <- 0
-            Dla każdego j od 0 do vertices-1:
-                Jeśli graph[i][j] > 0:
-                    degree <- degree + 1
-            Jeśli degree < minDegree:
-                minDegree <- degree
-                nextVertex <- i
+    minimalnyStopien ← MAKS_WARTOSC
+    nastepnyWierzcholek ← -1
+    dla i od 0 do wierzcholki - 1 zrob
+        liczbaWykonan ← liczbaWykonan + 1 // Dla porównania w warunku pętli
+        jeżeli graf[obecny][i] > 0 oraz nieodwiedzone[i] wtedy
+            liczbaWykonan ← liczbaWykonan + 1 // Dla warunku if
+            stopien ← 0
+            dla j od 0 do wierzcholki - 1 zrob
+                liczbaWykonan ← liczbaWykonan + 1 // Dla porównania w warunku pętli
+                jeżeli graf[i][j] > 0 wtedy
+                    stopien ← stopien + 1
+                koniec jeżeli
+                liczbaWykonan ← liczbaWykonan + 1 // Dla warunku if
+            koniec dla
+            jeżeli stopien < minimalnyStopien wtedy
+                minimalnyStopien ← stopien
+                nastepnyWierzcholek ← i
+                liczbaWykonan ← liczbaWykonan + 1 // Dla warunku if i przypisania
+            koniec jeżeli
+        koniec jeżeli
+    koniec dla
 
-    Jeśli nextVertex == -1:
-        Zwróć false (brak dostępnych nieodwiedzonych wierzchołków)
+    jeżeli nastepnyWierzcholek = -1 wtedy
+        zwroc fałsz // Brak dostępnych nieodwiedzonych wierzchołków
+    koniec jeżeli
 
-    Oznacz nextVertex jako odwiedzony
-    Dodaj nextVertex do ścieżki
-    Zwróć ZnajdźNastępnyWierzchołekONajniższymStopniu(nextVertex)
-
+    odwiedzone[nastepnyWierzcholek] ← prawda
+    sciezka.dodaj(nastepnyWierzcholek)
+    zwroc znajdzNastepnyWierzcholekZNajmniejszymStopniem(nastepnyWierzcholek)
