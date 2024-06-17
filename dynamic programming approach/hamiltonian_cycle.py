@@ -4,7 +4,8 @@ import random
 import time
 import pandas as pd
 
-adjacency_list: tuple[tuple[int]]
+
+# adjacency_list: tuple[tuple[int]]
 count_of_algorithm = 0
 execution_times = []
 step_counts = []
@@ -30,7 +31,7 @@ def generate_graph(size: int, density: float) -> tuple[tuple[int]]:
     return tuple(new_adjacency_list)
 
 
-def hamiltonian_cycle() -> bool:
+def hamiltonian_cycle(adjacency_list) -> bool:
     global count_of_algorithm
     hamiltonian_list: list[set[tuple[frozenset, int]]] = []
     for i in range(len(adjacency_list)):
@@ -75,9 +76,8 @@ number_of_executions = int(args[3])
 
 for _ in range(number_of_executions):
     adjacency_list = generate_graph(size, density)
-
     entry = time.time()
-    cycle = hamiltonian_cycle()
+    cycle = hamiltonian_cycle(adjacency_list)
     end = time.time()
     time_of_execution = end - entry
 
