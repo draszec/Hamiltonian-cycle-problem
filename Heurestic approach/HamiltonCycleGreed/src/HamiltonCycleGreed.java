@@ -125,11 +125,12 @@ public class HamiltonCycleGreed {
         int[] vertexCounts = {10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60};
         double[] edgeProbabilities = {0.3, 0.5, 0.7};
         int executions = 300;
+
         //endregion
-        String outputPath = "hamilton_cycle_results.csv";
+        String outputPath = "../../heuristic.csv";
         try (FileWriter writer = new FileWriter(outputPath, false)) {
             if (new java.io.File(outputPath).length() == 0) {
-                writer.write("Czas wykonania (ms),Czy znaleziono cykl Hamiltona,Liczenie Operacji,Liczba Wierzchołków,Prawdopodobieństwo Krawędzi\n");
+                writer.write("n-size,edge_probability,operations_count,operations_count,output\n");
             }
 
             System.out.println("Rozgrzewka JVM...");
@@ -147,10 +148,16 @@ public class HamiltonCycleGreed {
                         long startTime = System.nanoTime();
                         cycleFinder.findPath();
                         long endTime = System.nanoTime();
-                        double elapsedTimeInMs = (endTime - startTime) / 1_000_000.0;
-                        System.out.println("Czas trwania heurystycznego algorytmu wyszukiwania cyklu Hamiltona: " + elapsedTimeInMs + " ms\n");
+                        double elapsedTimeInS = (endTime - startTime) / 1_000_000_000.0;
+                        System.out.println("Czas trwania heurystycznego algorytmu wyszukiwania cyklu Hamiltona: " + elapsedTimeInS + " s\n");
 
-                        writer.write(elapsedTimeInMs + "," + cycleFinder.cycleFound + "," + cycleFinder.countOfExecutions + "," + vertices + "," + edgeProbability + "\n");
+                        writer.write(
+                                    vertices +
+                                        "," + edgeProbability +
+                                        "," +cycleFinder.countOfExecutions +
+                                        "," + elapsedTimeInS +
+                                        "," +cycleFinder.cycleFound +
+                                        "\n");
                     }
                 }
             }
