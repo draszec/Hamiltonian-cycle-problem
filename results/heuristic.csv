@@ -1,4 +1,4 @@
-n-size,edge_probability,operations_count,operations_count,output
+n-size,edge_probability,operations_count,time,output
 10,0.3,107,3.4292E-5,false
 10,0.3,213,2.3886E-5,false
 10,0.3,456,3.2895E-5,false

@@ -130,7 +130,7 @@ public class HamiltonCycleGreed {
         String outputPath = "../../results/heuristic.csv";
         try (FileWriter writer = new FileWriter(outputPath, false)) {
             if (new java.io.File(outputPath).length() == 0) {
-                writer.write("n-size,edge_probability,operations_count,operations_count,output\n");
+                writer.write("n-size,edge_probability,operations_count,time,output\n");
             }
 
             System.out.println("Rozgrzewka JVM...");
