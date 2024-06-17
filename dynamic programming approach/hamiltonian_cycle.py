@@ -1,32 +1,31 @@
 import os
+import sys
 import random
 import time
 import pandas as pd
 
 adjacency_list: tuple[tuple[int]]
 count_of_algorithm = 0
+execution_times = []
+step_counts = []
+outputs = []
 
-
-def generate_graph(size: int, number_of_edges: int) -> tuple[tuple[int]]:
-    assert size > 0 and number_of_edges >= 0
-    # assert number_of_edges <= size * (size - 1) / 2
+def generate_graph(size: int, density: float) -> tuple[tuple[int]]:
+    assert size > 0 and 0 <= density <= 1
 
     new_adjacency_list = []
     for i in range(size):
         new_adjacency_list.append([])
 
-    for i in range(number_of_edges):
-        first_node = random.randint(0, size - 1)
-        second_node = random.randint(0, size - 1)
-        while first_node == second_node:
-            first_node = random.randint(0, size - 1)
-            second_node = random.randint(0, size - 1)
-
-        new_adjacency_list[first_node].append(second_node)
-        new_adjacency_list[second_node].append(first_node)
+    for i in range(size - 1):
+        for j in range(i+1, size):
+            r = random.random()
+            if r < density:
+                new_adjacency_list[i].append(j)
+                new_adjacency_list[j].append(i)
 
     for i in range(len(new_adjacency_list)):
-        new_adjacency_list[i] = tuple(set(new_adjacency_list[i]))
+        new_adjacency_list[i] = tuple(new_adjacency_list[i])
 
     return tuple(new_adjacency_list)
 
@@ -63,19 +62,39 @@ def hamiltonian_cycle() -> bool:
     return False
 
 
-if __name__ == "__main__":
-    size = 15
-    adjacency_list = generate_graph(size, 40)
+args = sys.argv
+if len(args) < 4:
+    print("No size, density or number of executions given")
+    exit(1)
+size = int(args[1])
+density = float(args[2])
+number_of_executions = int(args[3])
+
+# size = 15
+# density = 0.3
+
+for _ in range(number_of_executions):
+    adjacency_list = generate_graph(size, density)
 
     entry = time.time()
     cycle = hamiltonian_cycle()
     end = time.time()
     time_of_execution = end - entry
-    df = pd.DataFrame(
-        data={'n-size': [size], 'operations_count': [count_of_algorithm], 'time': [time_of_execution], 'output': [cycle]}
-    )
-    output_path = '../dynamic.csv'
-    df.to_csv(output_path, mode='a', header=not os.path.exists(output_path))
 
-    # print(adjacency_list)
-    print(cycle)
+    execution_times.append(time_of_execution)
+    step_counts.append(count_of_algorithm)
+    count_of_algorithm = 0
+    outputs.append(cycle)
+
+df = pd.DataFrame(
+    data={
+            'n-size': [size] * number_of_executions,
+            'edge_probability': [density] * number_of_executions,
+            'operations_count': step_counts,
+            'time': execution_times,
+            'output': outputs
+        }
+)
+
+output_path = '../dynamic.csv'
+df.to_csv(output_path, mode='a', header=not os.path.exists(output_path), index=False)
