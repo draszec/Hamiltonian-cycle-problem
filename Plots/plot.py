@@ -2,13 +2,13 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 # Załaduj plik csv
-file_path = 'hamilton_cycle_results.csv'
+file_path = '../results/heuristic.csv'
 df = pd.read_csv(file_path)
 
 # Oblicz średni czas wykonania i średnią liczbę operacji grupowane według liczby wierzchołków
 # i prawdopodobieństwa krawędzi
-mean_times = df.groupby(['Liczba Wierzchołków', 'Prawdopodobieństwo Krawędzi'])['Czas wykonania (ms)'].mean().unstack()
-mean_operations = df.groupby(['Liczba Wierzchołków', 'Prawdopodobieństwo Krawędzi'])['Liczenie Operacji'].mean().unstack()
+mean_times = df.groupby(['n-size', 'density'])['time'].mean().unstack()
+mean_operations = df.groupby(['n-size', 'density'])['operations_count'].mean().unstack()
 
 # Przykład zmiany podpisów linii wykresów
 # Załóżmy, że chcesz zmienić podpisy na "Low", "Medium", "High" zamiast wartości prawdopodobieństwa
