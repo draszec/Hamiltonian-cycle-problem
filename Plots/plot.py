@@ -7,8 +7,8 @@ df = pd.read_csv(file_path)
 
 # Oblicz średni czas wykonania i średnią liczbę operacji grupowane według liczby wierzchołków
 # i prawdopodobieństwa krawędzi
-mean_times = df.groupby(['n-size', 'density'])['time'].mean().unstack()
-mean_operations = df.groupby(['n-size', 'density'])['operations_count'].mean().unstack()
+mean_times = df.groupby(['n-size', 'edge_probability'])['time'].mean().unstack()
+mean_operations = df.groupby(['n-size', 'edge_probability'])['operations_count'].mean().unstack()
 
 # Przykład zmiany podpisów linii wykresów
 # Załóżmy, że chcesz zmienić podpisy na "Low", "Medium", "High" zamiast wartości prawdopodobieństwa
