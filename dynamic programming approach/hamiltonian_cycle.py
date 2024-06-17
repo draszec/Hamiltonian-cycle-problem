@@ -96,5 +96,5 @@ df = pd.DataFrame(
         }
 )
 
-output_path = '../dynamic.csv'
+output_path = '../results/dynamic.csv'
 df.to_csv(output_path, mode='a', header=not os.path.exists(output_path), index=False)
